@@ -1,6 +1,5 @@
 import { getVertexShader, getFragmentShader } from './utils.js'
 
-// Global variables
 let gl
 let program
 let squareVertexBuffer
@@ -24,12 +23,12 @@ function draw() {
 }
 
 function init() {
-  // Set the canvas to the size of the screen
+  // Set the canvas size
   canvas.width = 100; // window.innerWidth;
   canvas.height = 20; // window.innerHeight;
 
   // Retrieve a WebGL context
-  gl = canvas.getContext('webgl2', {preserveDrawingBuffer: true}) // , {preserveDrawingBuffer: true}
+  gl = canvas.getContext('webgl2', {preserveDrawingBuffer: true})
   // Set the clear color to be black
   gl.clearColor(0, 0, 0, 1);
 
@@ -59,14 +58,11 @@ function init() {
   console.log('width', width);
   console.log('height', height);
   
-  // init buffer for the ray tracing
   /*
     (-1, 1, 0)        (1, 1, 0)
     X---------------------X
     |                     |
-    |                     |
     |       (0, 0)        |
-    |                     |
     |                     |
     X---------------------X
     (-1, -1, 0)       (1, -1, 0)
@@ -84,7 +80,6 @@ function init() {
   squareVertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
   // Clean up the buffer
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
@@ -92,8 +87,6 @@ function init() {
   gl.uniform1i(widthLoc, canvas.width);
   heightLoc = gl.getUniformLocation(program, 'uHeight');
   gl.uniform1i(heightLoc, canvas.height);
-  
-  // draw geometry
   draw();
 
   let uintResult = readUint32Array();
@@ -120,5 +113,4 @@ function readInt32Array() {
   return new Int32Array(pixels.buffer);
 }
 
-// Call init once the webpage has loaded
 window.onload = init;

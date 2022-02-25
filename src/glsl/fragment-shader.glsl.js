@@ -7,7 +7,7 @@ out vec4 fragColor;
 uniform int uWidth;
 uniform int uHeight;
 
-const float PI = 3.141592653589793238462643383;
+// period parameters
 const uint MATRIX_A = 0x9908B0DFu;
 const uint UPPER_MASK = 0x80000000u;
 const uint LOWER_MASK = 0x7FFFFFFFu;
@@ -19,6 +19,7 @@ const int KEY_LENGTH = 4;
 uint mt[N];
 int mti = N+1;
 
+// initialize mt[N] with a seed
 void initSeedMT(uint s) {
     mt[0]= s;
     for (int i=1; i<N; i++) {
@@ -26,6 +27,7 @@ void initSeedMT(uint s) {
     }
 }
 
+// initialize mt[N] with an array of length KEY_LENGTH
 void initArrayMT(uint initKey[KEY_LENGTH]) {
     int i, j, k;
     initSeedMT(19650218u);
@@ -56,7 +58,7 @@ void initArrayMT(uint initKey[KEY_LENGTH]) {
     mt[0] = 0x80000000u;
 }
 
-
+// calculate a random number in uint
 uint uintMT(void) {
     uint y;
     uint mag01[2];
@@ -79,7 +81,7 @@ uint uintMT(void) {
     }
     y = mt[mti++];
 
-    // Tempering
+    // tempering
     y ^= (y >> 11);
     y ^= (y << 7) & 0x9D2C5680u;
     y ^= (y << 15) & 0xEFC60000u;
@@ -92,6 +94,7 @@ float floatMT(void) {
     return float(uintMT())*(1.0/4294967295.0);
 }
 
+// convert int32 to vec4 color
 vec4 intToVec4(int num) {
     int rIntValue = num & 0x000000FF;
     int gIntValue = (num & 0x0000FF00) >> 8;
@@ -99,8 +102,9 @@ vec4 intToVec4(int num) {
     int aIntValue = (num & 0xFF000000) >> 24;
     vec4 numColor = vec4(float(rIntValue)/255.0, float(gIntValue)/255.0, float(bIntValue)/255.0, float(aIntValue)/255.0); 
     return numColor; 
-} 
+}
 
+// convert uint32 to vec4 color
 vec4 uintToVec4(uint num) {
     uint rIntValue = num & 0x000000FFu;
     uint gIntValue = (num & 0x0000FF00u) >> 8;
@@ -110,22 +114,27 @@ vec4 uintToVec4(uint num) {
     return numColor;
 }
 
+// convert float32 to vec4 color
 vec4 floatToVec4(float val) {
     uint conv = floatBitsToUint(val);
     return uintToVec4(conv);
 }
 
 void main(void) {
+    // initialize mt[N] with an array
     uint seed[4];
     seed[0] = 0x123u;
     seed[1] = 0x234u;
     seed[2] = 0x345u;
     seed[3] = 0x456u;
     initArrayMT(seed);
+
+    // calculate a random number in each pixel
     int pix = uWidth*int(gl_FragCoord.y) + int(gl_FragCoord.x) + 1;
     uint uintRand;
     float floatRand;
 
+    // generate 1000 uint values and 1000 flat values
     if (pix < 1000) {
         for (int i=0; i<pix; i++) {
             uintRand = uintMT();
